@@ -92,8 +92,8 @@ struct thread {
 	char name[16];                      /* Name (for debugging purposes). */
 	int priority;                       /* Priority. */
   
-  // // 일어날 시각 추가
-  // int64_t wakeup_ticks;
+  // 일어날 시각 추가
+  int64_t wakeup_ticks;
 	/* Shared between thread.c and synch.c. */
 	struct list_elem elem;              /* List element. */
 
@@ -145,9 +145,9 @@ int thread_get_load_avg (void);
 
 void do_iret (struct intr_frame *tf);
 
-// // thread_sleep
-// void thread_sleep (int64_t ticks);
-// bool cmp_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux);
-// void thread_wakeup (int64_t global_ticks);
-//
+// thread_sleep
+void thread_sleep (int64_t ticks);
+bool cmp_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux);
+void thread_wakeup (int64_t global_ticks);
+
 #endif /* threads/thread.h */

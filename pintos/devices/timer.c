@@ -79,17 +79,17 @@ int64_t timer_elapsed (int64_t then) {
 
 // 대략 ticks 동안 실행을 일시 중단
 void timer_sleep (int64_t ticks) {
-	int64_t start = timer_ticks ();
-
-	ASSERT (intr_get_level () == INTR_ON);
-	while (timer_elapsed (start) < ticks)
-		thread_yield ();
+	// int64_t start = timer_ticks ();
+	//
+	// ASSERT (intr_get_level () == INTR_ON);
+	// while (timer_elapsed (start) < ticks)
+	// 	thread_yield ();
   
   // 현재 시각
-  // int64_t start = timer_ticks();
-  // ASSERT(intr_get_level() == INTR_ON);
-  // // 현재 시각 (start) + 잠들 시간(ticks)
-  // thread_sleep(start + ticks);
+  int64_t start = timer_ticks();
+  ASSERT(intr_get_level() == INTR_ON);
+  // 현재 시각 (start) + 잠들 시간(ticks)
+  thread_sleep(start + ticks);
 
 }
 
@@ -117,7 +117,7 @@ void timer_print_stats (void) {
 static void timer_interrupt (struct intr_frame *args UNUSED) {
 	ticks++;
 	thread_tick ();
-  // thread_wakeup(ticks);
+  thread_wakeup(ticks);
 }
 
 // LOOPS번 반복했을 때 한 타이머 틱 이상이 경과하면 true, 그렇지 않으면 false.
