@@ -54,6 +54,9 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
+// // define sleep_list
+// static struct list sleep_list;
+//
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
@@ -95,6 +98,8 @@ static uint64_t gdt[3] = { 0, 0x00af9a000000ffff, 0x00cf92000000ffff };
 void
 thread_init (void) {
 	ASSERT (intr_get_level () == INTR_OFF);
+
+	list_init (&sleep_list);
 
 	/* Reload the temporal gdt for the kernel
 	 * This gdt does not include the user context.
@@ -164,7 +169,7 @@ thread_print_stats (void) {
 /* Creates a new kernel thread named NAME with the given initial
    PRIORITY, which executes FUNCTION passing AUX as the argument,
    and adds it to the ready queue.  Returns the thread identifier
-   for the new thread, or TID_ERROR if creation fails.
+   for the new thread, othread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cthread.cr TID_ERROR if creation fails.
 
    If thread_start() has been called, then the new thread may be
    scheduled before thread_create() returns.  It could even exit
@@ -588,3 +593,45 @@ allocate_tid (void) {
 
 	return tid;
 }
+//
+// void thread_sleep(int64_t ticks) {
+//   struct thread *curr;
+//   enum intr_level old_level;
+//   // deactivate interrupt
+//   old_level = intr_disable();
+//
+//   curr = thread_current();
+//   ASSERT(curr != idle_thread);
+//
+//   curr->wakeup_ticks = ticks;
+//   list_insert_ordered(&sleep_list, &curr->elem, cmp_thread_ticks, NULL);
+//   thread_block();
+//
+//   intr_set_level(old_level);
+// }
+//
+// bool cmp_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
+//   struct thread *st_a = list_entry(a, struct thread, elem);
+//   struct thread *st_b = list_entry(b, struct thread, elem);
+//
+//   return st_a -> wakeup_ticks < st_b -> wakeup_ticks;
+// }
+//
+// void thread_wakeup(int64_t current_ticks) {
+//   enum intr_level old_level;
+//   old_level = intr_disable();
+//
+//   struct list_elem *curr_elem = list_begin(&sleep_list);
+//   while (curr_elem != list_end(&sleep_list)) {
+//     struct thread *curr_thread = list_entry(curr_elem, struct thread, elem);
+//
+//     if (current_ticks >= curr_thread -> wakeup_ticks) {
+//       curr_elem = list_remove(curr_elem);
+//       thread_unblock(curr_thread);
+//     } else {
+//       break;
+//     }
+//
+//     intr_set_level(old_level);
+//   }
+// }
