@@ -1,0 +1,12 @@
+alarm-single | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-single | tests/threads FAIL
+alarm-simultaneous | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-simultaneous | tests/threads FAIL
+alarm-simultaneous | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-simultaneous | tests/threads FAIL
+alarm-zero | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-zero | tests/threads FAIL
+alarm-single | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-single | tests/threads FAIL
+alarm-negative | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-negative | tests/threads FAIL
+alarm-priority | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-priority | tests/threads FAIL
+alarm-multiple | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-multiple | tests/threads FAIL
+alarm-zero | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-zero | tests/threads FAIL
+alarm-priority | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-priority | tests/threads FAIL
+alarm-negative | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-negative | tests/threads FAIL
+alarm-multiple | --fs-disk=10 --swap-disk=4 | -q -threads-tests -f run | alarm-multiple | tests/threads FAIL

@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "[Week 9]Threads Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "pintos_lab_docker_week9/pintos/threads/build/kernel.o",
+      "cwd": "pintos_lab_docker_week9/pintos/threads",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "miDebuggerServerAddress": "localhost:1234",
+    },
+  ]
+}
