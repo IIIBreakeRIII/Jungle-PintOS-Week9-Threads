@@ -12,7 +12,7 @@
 #endif
 
 
-/* States in a thread's life cycle. */
+// 스레드가 가질 수 있는 상태를 정의
 enum thread_status {
 	THREAD_RUNNING,     /* Running thread. */
 	THREAD_READY,       /* Not running but ready to run. */
@@ -87,6 +87,9 @@ typedef int tid_t;
  * only because they are mutually exclusive: only a thread in the
  * ready state is on the run queue, whereas only a thread in the
  * blocked state is on a semaphore wait list. */
+
+// 스레드를 관리하기 위한 핵심 자료구조
+// 스레드의 ID, 이름, 상태, 우선순위, 커널 스택 등의 정보 담음
 struct thread {
 	/* Owned by thread.c. */
 	tid_t tid;                          /* Thread identifier. */
