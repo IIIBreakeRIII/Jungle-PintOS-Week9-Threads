@@ -1,3 +1,5 @@
+// Thread System의 인터페이스 정의
+
 #ifndef THREADS_THREAD_H
 #define THREADS_THREAD_H
 

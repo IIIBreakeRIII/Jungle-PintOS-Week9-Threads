@@ -1,3 +1,5 @@
+// 하드웨어 타이머를 관리, 시간과 관련된 기능 제공
+
 #include "devices/timer.h"
 #include <debug.h>
 #include <inttypes.h>
@@ -89,7 +91,11 @@ void timer_sleep (int64_t ticks) {
   int64_t start = timer_ticks();
   ASSERT(intr_get_level() == INTR_ON);
   // 현재 시각 (start) + 잠들 시간(ticks)
-  thread_sleep(start + ticks);
+  // thread_sleep(start + ticks);
+
+	if(timer_elapsed(start) < ticks) {
+		thread_sleep(start + ticks);
+	}
 
 }
 
