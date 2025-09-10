@@ -63,8 +63,6 @@ static void init_thread(struct thread *, const char *name, int priority);
 static void do_schedule(int status);
 static void schedule(void);
 static tid_t allocate_tid(void);
-static bool compare_t_priority(const struct list_elem *a,
-                               const struct list_elem *b, void *aux);
 
 /* Returns true if T appears to point to a valid thread. */
 #define is_thread(t) ((t) != NULL && (t)->magic == THREAD_MAGIC)
@@ -113,6 +111,8 @@ void thread_init(void) {
   init_thread(initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid();
+
+
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -197,7 +197,7 @@ tid_t thread_create(const char *name, int priority, thread_func *function,
   t->tf.ss = SEL_KDSEG;
   t->tf.cs = SEL_KCSEG;
   t->tf.eflags = FLAG_IF;
-
+  
   /* Add to run queue. */
   thread_unblock(t);
 
@@ -232,10 +232,13 @@ void thread_unblock(struct thread *t) {
 
   old_level = intr_disable();
   ASSERT(t->status == THREAD_BLOCKED);
-  // list_push_back(&ready_list, &t->elem);
+
   list_insert_ordered(&ready_list, &t->elem, compare_t_priority, NULL);
   t->status = THREAD_READY;
+
   intr_set_level(old_level);
+
+  priority_preempt(t);
 }
 
 /* Returns the name of the running thread. */
@@ -280,6 +283,13 @@ void thread_exit(void) {
 /* Yields the CPU.  The current thread is not put to sleep and
    may be scheduled again immediately at the scheduler's whim. */
 void thread_yield(void) {
+
+  // if (!list_empty(&ready_list)) {
+  //   struct thread *temp =
+  //       list_entry(list_front(&ready_list), struct thread, elem);
+  //   printf("temp 쓰레드 = %s, 우선순위 = %d\n", temp->name, temp->priority);
+  // }
+
   struct thread *curr = thread_current();
   enum intr_level old_level;
 
@@ -287,10 +297,12 @@ void thread_yield(void) {
 
   old_level = intr_disable();
   if (curr != idle_thread) {
-    // list_push_back(&ready_list, &curr->elem);
     list_insert_ordered(&ready_list, &curr->elem, compare_t_priority, NULL);
   }
+  // 이 소스를 타고가면 thread_launch() 를 호출하기 때문에 실제 문맥전환은
+  // 거기서 이뤄짐
   do_schedule(THREAD_READY);
+  // 따라서 스레드가 CPU를 할당받았을 때 다음 코드는 여기부터임
   intr_set_level(old_level);
 }
 
@@ -298,7 +310,11 @@ void thread_yield(void) {
 void thread_set_priority(int new_priority) {
   struct thread *curr = thread_current();
   curr->priority = new_priority;
-  if (curr->priority < list_entry(list_front(&ready_list),struct thread,elem)->priority) {
+
+  // 우선순위 변경에 따른 선점(preempt)
+  if (!list_empty(&ready_list) &&
+      curr->priority <
+          list_entry(list_front(&ready_list), struct thread, elem)->priority) {
     thread_yield();
   }
 }
@@ -386,7 +402,9 @@ static void init_thread(struct thread *t, const char *name, int priority) {
   strlcpy(t->name, name, sizeof t->name);
   t->tf.rsp = (uint64_t)t + PGSIZE - sizeof(void *);
   t->priority = priority;
+  t->original_priority = priority;
   t->magic = THREAD_MAGIC;
+  list_init(&t->locks);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -564,9 +582,19 @@ static tid_t allocate_tid(void) {
 }
 
 /* 우선순위 비교 함수 */
-static bool compare_t_priority(const struct list_elem *a,
-                               const struct list_elem *b, void *aux) {
+bool compare_t_priority(const struct list_elem *a, const struct list_elem *b,
+                        void *aux UNUSED) {
   struct thread *t1 = list_entry(a, struct thread, elem);
   struct thread *t2 = list_entry(b, struct thread, elem);
   return t1->priority > t2->priority;
+}
+
+/* 실행흐름 선점(우선순위) */
+void priority_preempt(const struct thread *t) {
+  struct thread *curr = thread_current();
+  if (t != idle_thread && curr != idle_thread && thread_tid() != t->tid &&
+      curr->priority < t->priority) {
+    // printf("현재쓰레드 = %s, 선점쓰레드 = %s \n", curr->name, t->name);
+    thread_yield();
+  }
 }

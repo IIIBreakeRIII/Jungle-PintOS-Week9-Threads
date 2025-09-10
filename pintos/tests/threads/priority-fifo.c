@@ -15,7 +15,6 @@
 #include "threads/thread.h"
 #include <stdio.h>
 
-
 struct simple_thread_data {
   int id;            /* Sleeper ID. */
   int iterations;    /* Iterations so far. */
