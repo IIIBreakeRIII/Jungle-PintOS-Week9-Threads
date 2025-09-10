@@ -1,5 +1,5 @@
 priority-donate-multiple FAIL
-priority-donate-one PASS
+priority-donate-one FAIL
 priority-donate-lower FAIL
 priority-preempt PASS
 alarm-simultaneous PASS
