@@ -80,5 +80,7 @@
 - 아무튼 이제 개략적으로는 알고 있다고 생각함
 - 이따 donate 까지 하고 정리필요
 
-### priority-danate-녀석들....
+### priority-danate-multiple
+
+
 

@@ -39,8 +39,13 @@ void cond_wait(struct condition *, struct lock *);
 void cond_signal(struct condition *, struct lock *);
 void cond_broadcast(struct condition *, struct lock *);
 
+/* 조건변수(세마포어) 우선순위 비교 */
 bool compare_sema_priority(const struct list_elem *a, const struct list_elem *b,
                            void *aux);
+
+/* 기부리스트 우선순위 max */
+bool compare_donor_max_priority(const struct list_elem *a,
+                                const struct list_elem *b, void *aux);
 
 /* Optimization barrier.
  *

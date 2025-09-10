@@ -90,14 +90,14 @@ struct thread {
   tid_t tid;                 /* Thread identifier. */
   enum thread_status status; /* Thread state. */
   char name[16];             /* Name (for debugging purposes). */
+  int64_t wake_up_tick;      /* 일어날 시간 */
   int priority;              /* Priority. */
-  int original_priority;        /* donate 시 원래의 우선순위 기억 */
-  struct list donors;  /* 우선순위를 기부해준 스레드들 기억 */
-  struct list locks;            /* 락도 여러개 잡을 수 있음 */
-  int64_t wake_up_tick;
-  /* Shared between thread.c and synch.c. */
-  struct list_elem elem;          /* sleep-list/ready-list List element. */
-  struct list_elem donor_elem;  /* 우선순위 기부 List element. */
+  int original_priority;     /* donate 시 원래의 우선순위 기억 */
+  struct list donors;    /* 우선순위를 기부해준 스레드들 기억 */
+  struct list locks;     /* 락도 여러개 잡을 수 있음 */
+  struct list_elem elem; /* sleep-list/ready-list List element. */
+  struct list_elem donor_elem; /* 우선순위 기부 List element. */
+  struct lock *waiting_lock;  /* 기다리고 있는 lock */
 
 #ifdef USERPROG
   /* Owned by userprog/process.c. */

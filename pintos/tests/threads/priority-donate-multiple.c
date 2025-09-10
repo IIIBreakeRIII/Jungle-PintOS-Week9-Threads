@@ -33,12 +33,6 @@ void test_priority_donate_multiple(void) {
   lock_acquire(&a);
   lock_acquire(&b);
 
-//   struct list_elem *e;
-//   for (e = list_begin(&thread_current()->locks);
-//        e != list_end(&thread_current()->locks); e = list_next(e)) {
-//     msg("락 목록 = %d\n", list_entry(e, struct lock, elem));
-//   }
-
   thread_create("a", PRI_DEFAULT + 1, a_thread_func, &a);
   msg("Main thread should have priority %d.  Actual priority: %d.",
       PRI_DEFAULT + 1, thread_get_priority());
