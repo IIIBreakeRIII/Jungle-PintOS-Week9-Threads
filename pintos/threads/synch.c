@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 
+// #define MAX(A, B) ((A) > (B) ? (A) : (B))
+
 /* Initializes semaphore SEMA to VALUE.  A semaphore is a
    nonnegative integer along with two atomic operators for
    manipulating it:
@@ -186,22 +188,23 @@ void lock_acquire(struct lock *lock) {
   ASSERT(!intr_context());
   ASSERT(!lock_held_by_current_thread(lock));
 
+  struct thread *curr = thread_current();
+
   // 우선순위 기부
-  // if (lock->holder != NULL &&
-  //     (lock->holder->priority < thread_current()->priority)) {
-  //   // donate_priority();
-  //   lock->holder->original_priority = lock->holder->priority;
-  //   lock->holder->priority = thread_current()->priority;
-  //   // holder 에서 우선순위를 기부한 스레드들(우선순위 기준으로 정렬해서 삽입)
-  //   list_insert_ordered(&lock->holder->donated_threads, &thread_current()->elem,
-  //                       compare_t_priority, NULL);
-  // }
+  if (lock->holder != NULL && (lock->holder->priority < curr->priority)) {
+    lock->holder->priority = curr->priority;
+    // holder 에서 우선순위를 기부한 스레드들(우선순위 기준으로 정렬해서 삽입)
+    list_insert_ordered(&lock->holder->donors, &curr->donor_elem,
+                        compare_t_priority, NULL);
+  }
 
   // 기부 후에 자원획득 시도
   sema_down(&lock->semaphore);
   // 자원획득에 성공하면 락 홀더가 업데이트 됨
-  lock->holder = thread_current();
-  //list_push_front(&thread_current()->locks, &lock->elem);
+  // 상단에 우선순위 기부는 사실 자원획득 실패한 경우에만 필요한 처리지만 이
+  // 코드에서 우선순위를 덮어쓰기 때문에 굳이 분기는 필요없음
+  lock->holder = curr;
+  list_push_front(&thread_current()->locks, &lock->elem);
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -232,19 +235,31 @@ void lock_release(struct lock *lock) {
   ASSERT(lock != NULL);
   ASSERT(lock_held_by_current_thread(lock));
 
-  // 락 해제를 기다리는 대기 스레드 중 홀더(스레드)에 우선순위를 기부를 했다면
-  // 제거
-  // if (!list_empty(&lock->semaphore.waiters)) {
-  //   struct list_elem *e;
-  //   for (e = list_begin(&lock->semaphore.waiters);
-  //        e != list_end(&lock->semaphore.waiters); e = list_next(e)) {
-  //     struct thread *waiter = list_entry(e, struct thread, elem);
+  struct thread *curr = thread_current();
 
-  //     // list_remove(&waiter->elem);
-  //   }
-  // }
+  // 현재 스레드 lock 리스트에서 제거
+  list_remove(&lock->elem);
 
-  //thread_current()->priority = thread_current()->original_priority;
+  //기부 정리 - 락 대기중인 스레드 중 우선순위를 기부한 스레드는 모두
+  //기부목록에서 제거 해당 락에 대한 기부목록만 제거, 즉 lock b 대기하면서
+  //우선순위를 기부한 스레드 B가 제거됨
+  struct list_elem *e;
+  for (e = list_begin(&lock->semaphore.waiters);
+       e != list_end(&lock->semaphore.waiters); e = list_next(e)) {
+    struct thread *waiter = list_entry(e, struct thread, elem);
+    list_remove(&waiter->donor_elem);
+  }
+
+  // priority 재계산 - 남은 기부목록 중 우선순위 가장 높은 건
+  int max_priority = curr->original_priority;
+  for (e = list_begin(&curr->donors); e != list_end(&curr->donors);
+       e = list_next(e)) {
+    struct thread *donor = list_entry(e, struct thread, donor_elem);
+    if (donor->priority > max_priority)
+      max_priority = donor->priority;
+  }
+  curr->priority = max_priority;
+
   lock->holder = NULL;
   sema_up(&lock->semaphore);
 }

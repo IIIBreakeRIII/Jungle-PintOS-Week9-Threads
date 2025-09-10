@@ -92,11 +92,12 @@ struct thread {
   char name[16];             /* Name (for debugging purposes). */
   int priority;              /* Priority. */
   int original_priority;        /* donate 시 원래의 우선순위 기억 */
-  struct list donated_threads;  /* 우선순위를 기부해준 스레드들 기억 */
+  struct list donors;  /* 우선순위를 기부해준 스레드들 기억 */
   struct list locks;            /* 락도 여러개 잡을 수 있음 */
   int64_t wake_up_tick;
   /* Shared between thread.c and synch.c. */
-  struct list_elem elem; /* List element. */
+  struct list_elem elem;          /* sleep-list/ready-list List element. */
+  struct list_elem donor_elem;  /* 우선순위 기부 List element. */
 
 #ifdef USERPROG
   /* Owned by userprog/process.c. */

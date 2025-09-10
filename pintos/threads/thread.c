@@ -310,6 +310,7 @@ void thread_yield(void) {
 void thread_set_priority(int new_priority) {
   struct thread *curr = thread_current();
   curr->priority = new_priority;
+  curr->original_priority = new_priority;
 
   // 우선순위 변경에 따른 선점(preempt)
   if (!list_empty(&ready_list) &&
@@ -405,6 +406,7 @@ static void init_thread(struct thread *t, const char *name, int priority) {
   t->original_priority = priority;
   t->magic = THREAD_MAGIC;
   list_init(&t->locks);
+  list_init(&t->donors);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
